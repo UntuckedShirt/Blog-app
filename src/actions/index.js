@@ -58,11 +58,19 @@ import jsonPlaceholder from '../apis/jsonPlaceholder';
 // we dont need the curlies in the out function and the return keyword
 // this is refatored to this example below
 
-export const fetchPostsAndUsers = () => async dispatch => {
-    console.log('about to fetch post')
+export const fetchPostsAndUsers = () => async (dispatch, getState) => {
     await dispatch(fetchPosts());
-    console.log('fetched posts')
-}
+
+
+        // await Promise.all(userIds.map(id => dispatch(fetchUser(id))))
+        // chain in a functin in lodash that allows us to chain on and manipulte some collection ofdata
+    
+    _.chain(getState().posts)
+        .map('userId')
+        .uniq()
+        .forEach(id => dispatch(fetchUser(id)))
+        .value();
+};
 
 export const fetchPosts = () => async dispatch => {
     const response = await jsonPlaceholder.get('/posts');
