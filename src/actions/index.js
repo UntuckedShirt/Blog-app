@@ -1,4 +1,5 @@
-import jsonPlaceholder from '../apis/jsonPlaceholder'
+import _ from 'lodash'
+import jsonPlaceholder from '../apis/jsonPlaceholder';
  
 // our fetchPost action creator must return plain JS obj with a type
 // property. in present we are not reurning an action from our 
@@ -57,13 +58,45 @@ import jsonPlaceholder from '../apis/jsonPlaceholder'
 // we dont need the curlies in the out function and the return keyword
 // this is refatored to this example below
 
-export const fetchPosts = () => 
-     async dispatch => {
+export const fetchPostsAndUsers = () => async dispatch => {
+    console.log('about to fetch post')
+    await dispatch(fetchPosts());
+    console.log('fetched posts')
+}
+
+export const fetchPosts = () => async dispatch => {
+    const response = await jsonPlaceholder.get('/posts');
+  
+    dispatch({ type: 'FETCH_POSTS', payload: response.data });
+  };
+
+// when we call this action creator we want to call the id of the user we want to fetch
+// below is the id of he user we want to fetch
+// ecerytime memoize is called itll return whatever it returned whe nit was called
+// even though we are memoiing we are memoizing a new function
+// we need to define a function outside of our action creator
+// thatll make a request and dispatch oru action. itll get memoized outside the creator
 
 
-        const response = jsonPlaceholder.get('/posts')
 
-          dispatch({type: 'FETCH_POSTS', payload: response })
-    
+
+  
+// you add the underscore in the new variable called _fetchUser. You put the underscore
+// to indicate that this is a private function and that other engi should not attempt otcall func unless fmailiar
+// 
+
+// export const fetchUser = id => dispatch => _fetchUser(id, dispatch);
+// const _fetchUser = _.memoize(async (id, dispatch) => {
+//     const response = await jsonPlaceholder.get(`/users/${id}`);
+  
+//     dispatch({ type: 'FETCH_USER', payload: response.data });
+// });
+
+
+export const fetchUser = id => async dispatch => {
+
+
+    const response = await jsonPlaceholder.get(`/users/${id}`);
+  
+    dispatch({ type: 'FETCH_USER', payload: response.data });
 };
-
